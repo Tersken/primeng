@@ -4,7 +4,8 @@ import {trigger,state,style,transition,animate,AnimationEvent} from '@angular/an
 import {CommonModule} from '@angular/common';
 import {ButtonModule} from 'primeng/button';
 import {DomHandler} from 'primeng/dom';
-import {SharedModule,PrimeTemplate} from 'primeng/api';
+import {DropdownModule} from 'primeng/dropdown';
+import {SharedModule,PrimeTemplate, SelectItem} from 'primeng/api';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 
 export const CALENDAR_VALUE_ACCESSOR: any = {
@@ -57,9 +58,10 @@ export interface LocaleSettings {
                                 <select tabindex="-1" class="ui-datepicker-month" *ngIf="monthNavigator && (view !== 'month') && numberOfMonths === 1" (change)="onMonthDropdownChange($event.target.value)">
                                     <option [value]="i" *ngFor="let monthName of locale.monthNames;let i = index" [selected]="i === month.month">{{monthName}}</option>
                                 </select>
-                                <select tabindex="-1" class="ui-datepicker-year" *ngIf="yearNavigator && numberOfMonths === 1" (change)="onYearDropdownChange($event.target.value)">
+                                <p-dropdown *ngIf="yearNavigator && numberOfMonths === 1" [options]="yearOptionsFormatted" [(ngModel)]="currentYear" (onChange)="onYearDropdownChange($event.target.value)"></p-dropdown>
+                                <!-- <select tabindex="-1" class="ui-datepicker-year" *ngIf="yearNavigator && numberOfMonths === 1" (change)="onYearDropdownChange($event.target.value)">
                                     <option [value]="year" *ngFor="let year of yearOptions" [selected]="year === currentYear">{{year}}</option>
-                                </select>
+                                </select>-->
                                 <span class="ui-datepicker-year" *ngIf="!yearNavigator">{{view === 'month' ? currentYear : month.year}}</span>
                             </div>
                         </div>
@@ -396,6 +398,8 @@ export class Calendar implements OnInit,OnDestroy,ControlValueAccessor {
     ticksTo1970: number;
     
     yearOptions: number[];
+
+    yearOptionsFormatted: SelectItem[];
     
     focus: boolean;
     
@@ -557,9 +561,11 @@ export class Calendar implements OnInit,OnDestroy,ControlValueAccessor {
 
     populateYearOptions(start, end) {
         this.yearOptions = [];
+        this.yearOptionsFormatted = [];
 
         for (let i = start; i <= end; i++) {
             this.yearOptions.push(i);
+            this.yearOptionsFormatted.push({ label: i, value: i});
         }
     }
 
@@ -2149,7 +2155,7 @@ export class Calendar implements OnInit,OnDestroy,ControlValueAccessor {
 }
 
 @NgModule({
-    imports: [CommonModule,ButtonModule,SharedModule],
+    imports: [CommonModule,ButtonModule,SharedModule, DropdownModule],
     exports: [Calendar,ButtonModule,SharedModule],
     declarations: [Calendar]
 })
